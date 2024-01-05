@@ -118,6 +118,7 @@ public class Expression {
             case "^":
                 return evalBitwiseXor(subexpr1, subexpr2, values);
 
+
             default:
                 return 0; // TODO: throw exception
         }

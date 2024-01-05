@@ -20,6 +20,7 @@ class ExpressionTest {
         bindings.put("A", 0);
         bindings.put("B", 12);
         bindings.put("hello", 345);
+        bindings.put("l33tc0d3", 6789);
 
         assertEquals(0, (new Expression("A").eval(bindings)));
         assertEquals(12, (new Expression("B").eval(bindings)));

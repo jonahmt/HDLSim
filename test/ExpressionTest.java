@@ -69,4 +69,29 @@ class ExpressionTest {
         assertEquals(0x0000_FFFF, exp6.eval(bindings));
     }
 
+    @Test
+    public void basicAdditionTest() {
+        HashMap<String, Integer> bindings = new HashMap<>();
+        bindings.put("A", 10);
+        bindings.put("B", 3);
+
+        Expression exp1 = new Expression("(1 + 1)");
+        Expression exp2 = new Expression("((3 + 4) + (1 + 2))");
+        Expression exp3 = new Expression("(  (3   +  4)+  (1+2)         )");
+        Expression exp4 = new Expression("(1 + (1 + (1 + (1 + (1 + (1 + (1 + 100)))))))");
+        Expression exp5 = new Expression("(A + 1)");
+        Expression exp6 = new Expression("(A + B)");
+        Expression exp7 = new Expression("(!A + ~~(B + 1))");
+
+        assertEquals(2, exp1.eval(bindings));
+        assertEquals(10, exp2.eval(bindings));
+        assertEquals(10, exp3.eval(bindings));
+        assertEquals(107, exp4.eval(bindings));
+        assertEquals(11, exp5.eval(bindings));
+        assertEquals(13, exp6.eval(bindings));
+        assertEquals(4, exp7.eval(bindings));
+
+
+    }
+
 }

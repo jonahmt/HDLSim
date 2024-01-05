@@ -1,8 +1,11 @@
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Expression {
 
-    private String expression;
+    private final String VALID_OPERATORS = "+";
+
+    private final String expression;
 
     public Expression(String expression) {
         this.expression = expression;
@@ -21,7 +24,7 @@ public class Expression {
 
         // Subexpression case
         else if (expression.contains("(")) {
-
+            return evalOperator(values);
         }
 
         // Variable lookup case
@@ -33,8 +36,6 @@ public class Expression {
         else {
             return Integer.parseInt(expression);
         }
-
-        return 0;
     }
 
     public int eval() {
@@ -60,6 +61,60 @@ public class Expression {
     private int evalBitwiseNot(HashMap<String, Integer> values) {
         Expression subexpr = new Expression(expression.substring(1));
         return ~subexpr.eval(values);
+    }
+
+    /**
+     * Splits the expression into two subexpressions. Evaluates each of them
+     * and then uses the operator to combine those outputs, returning that
+     * final output.
+     *
+     * Expression must take this form:
+     * (subexpr1 OP subexpr2)
+     * where subexpr1/2 can be a not expression, number, variable, or operator expression
+     */
+    private int evalOperator(HashMap<String, Integer> values) {
+        // Use iteration with a counter of open/closed parentheses to find out where the two sub expressions are
+        // We know that the operator applying in this expression is the one that
+        // first comes after we have seen one more open parenthesis than closed
+        String subexpr1str = "";
+        String op = "";
+        String subexpr2str = "";
+
+        int openMinusClose = 0;
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            if (c == '(') openMinusClose += 1;
+            else if (c == ')') openMinusClose -= 1;
+            else if (VALID_OPERATORS.contains(""+c) && openMinusClose == 1) {
+                // Here we have found the operator
+                subexpr1str = expression.substring(1, i).trim();
+                op = expression.substring(i, i+1);
+                subexpr2str = expression.substring(i+1, expression.length()-1).trim();
+            }
+        }
+
+        if (subexpr1str.equals("") || subexpr2str.equals("") || op.equals("")) {
+            return 0; // TODO: throw exception
+        }
+
+        Expression subexpr1 = new Expression(subexpr1str);
+        Expression subexpr2 = new Expression(subexpr2str);
+
+        // Figure out operator and pass to appropriate function
+        switch (op) {
+            case "+":
+                return evalPlus(subexpr1, subexpr2, values);
+            default:
+                return 0; // TODO: throw exception
+        }
+
+    }
+
+
+    // BINARY FUNCTIONS
+
+    private int evalPlus(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
+        return subexpr1.eval(values) + subexpr2.eval(values);
     }
 
 

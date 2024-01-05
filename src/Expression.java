@@ -3,7 +3,7 @@ import java.util.Stack;
 
 public class Expression {
 
-    private final String VALID_OPERATORS = "+";
+    private final String VALID_OPERATORS = "+-&|^";
 
     private final String expression;
 
@@ -34,6 +34,11 @@ public class Expression {
 
         // Constant case
         else {
+            if (expression.length() > 2 && expression.substring(0, 2).equals("0x")) {
+                return Integer.parseInt(expression.substring(2), 16);
+            } else if (expression.length() > 2 && expression.substring(0, 2).equals("0b")) {
+                return Integer.parseInt(expression.substring(2), 2);
+            }
             return Integer.parseInt(expression);
         }
     }
@@ -104,6 +109,15 @@ public class Expression {
         switch (op) {
             case "+":
                 return evalPlus(subexpr1, subexpr2, values);
+            case "-":
+                return evalMinus(subexpr1, subexpr2, values);
+            case "&":
+                return evalBitwiseAnd(subexpr1, subexpr2, values);
+            case "|":
+                return evalBitwiseOr(subexpr1, subexpr2, values);
+            case "^":
+                return evalBitwiseXor(subexpr1, subexpr2, values);
+
             default:
                 return 0; // TODO: throw exception
         }
@@ -117,5 +131,20 @@ public class Expression {
         return subexpr1.eval(values) + subexpr2.eval(values);
     }
 
+    private int evalMinus(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
+        return subexpr1.eval(values) - subexpr2.eval(values);
+    }
+
+    private int evalBitwiseAnd(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
+        return subexpr1.eval(values) & subexpr2.eval(values);
+    }
+
+    private int evalBitwiseOr(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
+        return subexpr1.eval(values) | subexpr2.eval(values);
+    }
+
+    private int evalBitwiseXor(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
+        return subexpr1.eval(values) ^ subexpr2.eval(values);
+    }
 
 }

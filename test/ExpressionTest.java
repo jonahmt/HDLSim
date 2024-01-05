@@ -90,8 +90,35 @@ class ExpressionTest {
         assertEquals(11, exp5.eval(bindings));
         assertEquals(13, exp6.eval(bindings));
         assertEquals(4, exp7.eval(bindings));
+    }
 
+    @Test
+    public void subtractionTest() {
+        Expression exp1 = new Expression("(10 - 8)");
+        Expression exp2 = new Expression("(3 - 100)");
 
+        assertEquals(2, exp1.eval());
+        assertEquals(-97, exp2.eval());
+    }
+
+    @Test
+    public void hexBinaryConstantsTest() {
+        Expression exp1 = new Expression("0xFF");
+        Expression exp2 = new Expression("0b0011");
+
+        assertEquals(255, exp1.eval());
+        assertEquals(3, exp2.eval());
+    }
+
+    @Test
+    public void bitwiseAndOrXorTest() {
+        Expression exp1 = new Expression("(0b1100 & 0b1010)");
+        Expression exp2 = new Expression("(0b1100 | 0b1010)");
+        Expression exp3 = new Expression("(0b1100 ^ 0b1010)");
+
+        assertEquals(0b1000, exp1.eval());
+        assertEquals(0b1110, exp2.eval());
+        assertEquals(0b0110, exp3.eval());
     }
 
 }

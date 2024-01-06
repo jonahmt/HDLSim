@@ -122,4 +122,17 @@ class ExpressionTest {
         assertEquals(0b0110, exp3.eval());
     }
 
+    @Test
+    public void equalityInequalityTest() {
+        Expression exp1 = new Expression("(1 == 1)");
+        Expression exp2 = new Expression("(1 == 2)");
+        Expression exp3 = new Expression("(1 != 1)");
+        Expression exp4 = new Expression("(1 != 2)");
+
+        assertEquals(1, exp1.eval());
+        assertEquals(0, exp2.eval());
+        assertEquals(0, exp3.eval());
+        assertEquals(1, exp4.eval());
+    }
+
 }

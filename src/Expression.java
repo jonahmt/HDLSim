@@ -1,9 +1,12 @@
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Stack;
+import java.util.List;
 
 public class Expression {
 
-    private final String VALID_OPERATORS = "+-&|^";
+    private final List<String> VALID_OPERATORS = Arrays.asList(
+            "+", "-", "&", "|", "^", "==", "!="
+    );
 
     private final String expression;
 
@@ -28,7 +31,7 @@ public class Expression {
         }
 
         // Variable lookup case
-        else if (MyUtils.isAlphabetical(expression.charAt(0))) {
+        else if (Character.isLetter(expression.charAt(0))) {
             return values.get(expression);
         }
 
@@ -90,11 +93,20 @@ public class Expression {
             char c = expression.charAt(i);
             if (c == '(') openMinusClose += 1;
             else if (c == ')') openMinusClose -= 1;
-            else if (VALID_OPERATORS.contains(""+c) && openMinusClose == 1) {
-                // Here we have found the operator
-                subexpr1str = expression.substring(1, i).trim();
-                op = expression.substring(i, i+1);
-                subexpr2str = expression.substring(i+1, expression.length()-1).trim();
+            else if (openMinusClose == 1) {
+                if (VALID_OPERATORS.contains("" + c)) {
+                    // Here we have found the operator
+                    subexpr1str = expression.substring(1, i).trim();
+                    op = expression.substring(i, i + 1);
+                    subexpr2str = expression.substring(i + 1, expression.length() - 1).trim();
+                }
+                // Length 2 operators check
+                else if (i < expression.length() - 1 && VALID_OPERATORS.contains(""+c+expression.charAt(i+1))) {
+                    // Here we have found the operator
+                    subexpr1str = expression.substring(1, i).trim();
+                    op = expression.substring(i, i + 2);
+                    subexpr2str = expression.substring(i + 2, expression.length() - 1).trim();
+                }
             }
         }
 
@@ -117,6 +129,10 @@ public class Expression {
                 return evalBitwiseOr(subexpr1, subexpr2, values);
             case "^":
                 return evalBitwiseXor(subexpr1, subexpr2, values);
+            case "==":
+                return evalEquality(subexpr1, subexpr2, values);
+            case "!=":
+                return evalInequality(subexpr1, subexpr2, values);
 
 
             default:
@@ -146,6 +162,14 @@ public class Expression {
 
     private int evalBitwiseXor(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
         return subexpr1.eval(values) ^ subexpr2.eval(values);
+    }
+
+    private int evalEquality(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
+        return subexpr1.eval(values) == subexpr2.eval(values) ? 1 : 0;
+    }
+
+    private int evalInequality(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
+        return subexpr1.eval(values) == subexpr2.eval(values) ? 0 : 1;
     }
 
 }

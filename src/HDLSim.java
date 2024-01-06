@@ -1,3 +1,8 @@
+/**
+ * @author Jonah Tharakan
+ *
+ * Driver class. Contains main method.
+ */
 
 public class HDLSim {
 

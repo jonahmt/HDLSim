@@ -4,6 +4,12 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Jonah Tharakan
+ *
+ * Unit tests for Expression class.
+ */
+
 class ExpressionTest {
 
     @Test

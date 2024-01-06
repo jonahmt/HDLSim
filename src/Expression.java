@@ -2,6 +2,26 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author Jonah Tharakan
+ *
+ * Class that represents one expression between any number of signals and
+ * contants.  Expressions use logical or arithmetical operators to combine
+ * signals and constants to resolve a signal integer value, which will be
+ * returned upon calling "eval(...)" on the Expression object.
+ *
+ * Internally the expressions are just stored as strings.
+ *
+ * Valid expressions take one of the following forms:
+ * - #
+ * - x
+ * - ~E
+ * - !E
+ * - (E OP E)
+ * where # represents a constant, x represents a signal name, E represents
+ * another expression, and OP represents a valid binary operator.
+ */
+
 public class Expression {
 
     private final List<String> VALID_OPERATORS = Arrays.asList(

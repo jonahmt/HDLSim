@@ -1,0 +1,7 @@
+reg A = 0;              // Declares that A stores an independent value
+wire B;                 // Declares that B's value depends on other values
+
+A <= A + 1;             // Nonblocking (sequential) assignment
+B = A + 20;             // Blocking (continuous) assignment
+
+TERMINATE A == 10;      // Declares that execution should stop when A has value 10

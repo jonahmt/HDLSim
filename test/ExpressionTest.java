@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -139,6 +140,29 @@ class ExpressionTest {
         assertEquals(0, exp2.eval());
         assertEquals(0, exp3.eval());
         assertEquals(1, exp4.eval());
+    }
+
+    @Test
+    public void signalNamesTest() {
+        Expression exp1 = new Expression("(1 + 1)");
+        Expression exp2 = new Expression("(A +((B    ==C) +4))");
+        Expression exp3 = new Expression("(ab3523 + (x0q359 - 0xabcdef))");
+
+        HashSet<String> signals;
+
+        signals = exp1.getSignalNames();
+        assertEquals(0, signals.size());
+
+        signals = exp2.getSignalNames();
+        assertEquals(3, signals.size());
+        assertTrue(signals.contains("A"));
+        assertTrue(signals.contains("B"));
+        assertTrue(signals.contains("C"));
+
+        signals = exp3.getSignalNames();
+        assertEquals(2, signals.size());
+        assertTrue(signals.contains("ab3523"));
+        assertTrue(signals.contains("x0q359"));
     }
 
 }

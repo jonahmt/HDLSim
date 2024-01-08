@@ -1,6 +1,8 @@
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author Jonah Tharakan
@@ -190,6 +192,81 @@ public class Expression {
 
     private int evalInequality(Expression subexpr1, Expression subexpr2, HashMap<String, Integer> values) {
         return subexpr1.eval(values) == subexpr2.eval(values) ? 0 : 1;
+    }
+
+
+    // OTHER INTERFACE METHODS ////////////////////////////////////////////////
+
+    /**
+     * Returns a set of all signal names in this expression.
+     */
+    public HashSet<String> getSignalNames() {
+        char firstChar = expression.charAt(0);
+
+        // Not case
+        if (firstChar == '!' || firstChar == '~') {
+            return (new Expression(expression.substring(1))).getSignalNames();
+        }
+
+        // Subexpression case
+        else if (expression.contains("(")) {
+            return getSignalNamesOperator();
+        }
+
+        // Variable lookup case
+        else if (Character.isLetter(expression.charAt(0))) {
+            HashSet<String> signal = new HashSet<>();
+            signal.add(expression);
+            return signal;
+        }
+
+        // Constant case
+        else {
+            return new HashSet<>();
+        }
+    }
+
+    /**
+     * Returns a set of all signal names in this expression in the case of
+     * an operator expression.
+     */
+    private HashSet<String> getSignalNamesOperator() {
+        // Use iteration with a counter of open/closed parentheses to find out where the two sub expressions are
+        // We know that the operator applying in this expression is the one that
+        // first comes after we have seen one more open parenthesis than closed
+        String subexpr1str = "";
+        String subexpr2str = "";
+
+        int openMinusClose = 0;
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            if (c == '(') openMinusClose += 1;
+            else if (c == ')') openMinusClose -= 1;
+            else if (openMinusClose == 1) {
+                if (VALID_OPERATORS.contains("" + c)) {
+                    // Here we have found the operator
+                    subexpr1str = expression.substring(1, i).trim();
+                    subexpr2str = expression.substring(i + 1, expression.length() - 1).trim();
+                }
+                // Length 2 operators check
+                else if (i < expression.length() - 1 && VALID_OPERATORS.contains(""+c+expression.charAt(i+1))) {
+                    // Here we have found the operator
+                    subexpr1str = expression.substring(1, i).trim();
+                    subexpr2str = expression.substring(i + 2, expression.length() - 1).trim();
+                }
+            }
+        }
+
+        if (subexpr1str.equals("") || subexpr2str.equals("")) {
+            return new HashSet<>(); // TODO: throw exception
+        }
+
+        Expression subexpr1 = new Expression(subexpr1str);
+        Expression subexpr2 = new Expression(subexpr2str);
+
+        HashSet<String> signals = subexpr1.getSignalNames();
+        signals.addAll(subexpr2.getSignalNames());
+        return signals;
     }
 
 }

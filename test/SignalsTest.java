@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Jonah Tharakan
  *
- * Unit/Integration tests for Signals class
+ * Unit tests for Signals class
  */
 class SignalsTest {
 

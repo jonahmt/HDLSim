@@ -116,7 +116,7 @@ public class Signals {
         HashSet<String> dependenciesSet = expression.getSignalNames();
         for (String d : dependenciesSet) {
             if (!wires.contains(d) && !regs.contains(d)) {
-                String msg = String.format("The expression for %s, <<  %s  >> has a dependency on %s, which has not been declared.",
+                String msg = String.format("The expression for %s, <<  %s  >>, has a dependency on %s, which has not been declared.",
                         signal, expressionStr, d);
                 throw new HDLParseException(msg);
             }
@@ -144,10 +144,13 @@ public class Signals {
      * Final step in building this object before it is able to be used for execution.
      * Reads dependency lists to create topological sort order for wire evaluation.
      *
+     * Throws HDLParseException if a signal has no expression
      * Throws HDLException if a cycle is found in the wire dependency graph.
      */
     public void build() throws HDLException {
         // Use DFS Topological Sort Algorithm
+
+        checkForExpressions();
 
         ArrayList<String> topologicalSort = new ArrayList<>();
 
@@ -170,7 +173,7 @@ public class Signals {
 
         while (inDegree0.size() > 0) {
             String u = inDegree0.pop();
-            topologicalSort.add(u);
+            topologicalSort.add(0, u);
             notVisited--;
             for (String v : dependencies.get(u)) {
                 if (wires.contains(v)) {
@@ -188,6 +191,13 @@ public class Signals {
 
         this.wireOrder = topologicalSort;
         this.built = true;
+    }
+
+    private void checkForExpressions() throws HDLParseException {
+        if (!noExpressionYet.isEmpty()) {
+            String msg = "The following signals have no driving expression: " + noExpressionYet;
+            throw new HDLParseException(msg);
+        }
     }
 
 

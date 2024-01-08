@@ -71,7 +71,7 @@ public class Expression {
     }
 
 
-    // PRIVATE HELPER METHODS ///////////////////////////////////////////
+    // PRIVATE HELPER METHODS /////////////////////////////////////////////////
 
     /**
      * Evaluates the subexpression and then returns the logical not (!)

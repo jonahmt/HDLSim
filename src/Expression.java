@@ -64,9 +64,9 @@ public class Expression {
 
         // Constant case
         else {
-            if (expression.length() > 2 && expression.substring(0, 2).equals("0x")) {
+            if (expression.length() > 2 && expression.startsWith("0x")) {
                 return Integer.parseInt(expression.substring(2), 16);
-            } else if (expression.length() > 2 && expression.substring(0, 2).equals("0b")) {
+            } else if (expression.length() > 2 && expression.startsWith("0b")) {
                 return Integer.parseInt(expression.substring(2), 2);
             }
             return Integer.parseInt(expression);

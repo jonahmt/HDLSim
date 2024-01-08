@@ -36,6 +36,11 @@ public class Expression {
         this.expression = expression;
     }
 
+    @Override
+    public String toString() {
+        return this.expression;
+    }
+
     public int eval(HashMap<String, Integer> values) {
         char firstChar = expression.charAt(0);
 
@@ -268,5 +273,6 @@ public class Expression {
         signals.addAll(subexpr2.getSignalNames());
         return signals;
     }
+
 
 }

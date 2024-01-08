@@ -1,8 +1,8 @@
 import Exceptions.HDLDuplicateSignalException;
+import Exceptions.HDLException;
 import Exceptions.HDLParseException;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author Jonah Tharakan
@@ -39,6 +39,8 @@ public class Signals {
      */
     private boolean built;
 
+    private ArrayList<String> wireOrder;
+
     /**
      * Creates a new Signals object, initializing all relevant internal data structures
      */
@@ -49,6 +51,7 @@ public class Signals {
         this.wires = new HashSet<>();
         this.noExpressionYet = new HashSet<>();
         this.dependencies = new HashMap<>();
+        this.wireOrder = null;
     }
 
 
@@ -135,6 +138,91 @@ public class Signals {
     public void addTerminate(String expressionStr) throws HDLDuplicateSignalException, HDLParseException {
         addWire("TERMINATE");
         addExpression("TERMINATE", expressionStr);
+    }
+
+    /**
+     * Final step in building this object before it is able to be used for execution.
+     * Reads dependency lists to create topological sort order for wire evaluation.
+     *
+     * Throws HDLException if a cycle is found in the wire dependency graph.
+     */
+    public void build() throws HDLException {
+        // Use DFS Topological Sort Algorithm
+
+        ArrayList<String> topologicalSort = new ArrayList<>();
+
+        HashMap<String, Integer> inDegree = new HashMap<>();
+        for (String wire : wires) { inDegree.put(wire, 0); }
+        for (String u : wires) {
+            for (String v : dependencies.get(u)) {
+                if (wires.contains(v)) {
+                    inDegree.put(v, inDegree.get(v) + 1);
+                }
+            }
+        }
+
+        int notVisited = wires.size();
+
+        Stack<String> inDegree0 = new Stack<>();
+        for (String wire : wires) {
+            if (inDegree.get(wire) == 0) { inDegree0.add(wire); }
+        }
+
+        while (inDegree0.size() > 0) {
+            String u = inDegree0.pop();
+            topologicalSort.add(u);
+            notVisited--;
+            for (String v : dependencies.get(u)) {
+                if (wires.contains(v)) {
+                    inDegree.put(v, inDegree.get(v) - 1);
+                    if (inDegree.get(v) == 0) {
+                        inDegree0.add(v);
+                    }
+                }
+            }
+        }
+
+        if (notVisited > 0) {
+            throw new HDLException("Cycle detected in wire dependencies!");
+        }
+
+        this.wireOrder = topologicalSort;
+        this.built = true;
+    }
+
+
+    // GETTERS ////////////////////////////////////////////////////////////////
+
+    public HashMap<String, Integer> getValues() {
+        return values;
+    }
+
+    public HashMap<String, Expression> getExpressions() {
+        return expressions;
+    }
+
+    public HashSet<String> getRegs() {
+        return regs;
+    }
+
+    public HashSet<String> getWires() {
+        return wires;
+    }
+
+    public HashSet<String> getNoExpressionYet() {
+        return noExpressionYet;
+    }
+
+    public HashMap<String, HashSet<String>> getDependencies() {
+        return dependencies;
+    }
+
+    public boolean isBuilt() {
+        return built;
+    }
+
+    public ArrayList<String> getWireOrder() {
+        return wireOrder;
     }
 
 }

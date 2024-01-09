@@ -1,8 +1,10 @@
+import Exceptions.HDLException;
+import Exceptions.HDLParseException;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.List;;
 
 /**
  * @author Jonah Tharakan
@@ -26,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Expression {
 
-    private final List<String> VALID_OPERATORS = Arrays.asList(
+    public final List<String> VALID_OPERATORS = Arrays.asList(
             "+", "-", "&", "|", "^", "==", "!="
     );
 
@@ -41,7 +43,13 @@ public class Expression {
         return this.expression;
     }
 
-    public int eval(HashMap<String, Integer> values) {
+    /**
+     * Evaluates this expression to return a single integer.
+     * Any encountered signals are replaced with their value found in VALUES.
+     *
+     * Throws HDLParseException if there is a problem with the expression.
+     */
+    public int eval(HashMap<String, Integer> values) throws HDLParseException {
         char firstChar = expression.charAt(0);
 
         // Not case
@@ -59,7 +67,12 @@ public class Expression {
 
         // Variable lookup case
         else if (Character.isLetter(expression.charAt(0))) {
-            return values.get(expression);
+            if (values.containsKey(expression)) {
+                return values.get(expression);
+            } else {
+                String msg = String.format("Provided values map does not contain key %s!", expression);
+                throw new HDLParseException(msg);
+            }
         }
 
         // Constant case
@@ -73,7 +86,13 @@ public class Expression {
         }
     }
 
-    public int eval() {
+    /**
+     * Evaluates this expression to return a single integer.
+     * Cannot be used to evaluate expressions with signals.
+     *
+     * Throws HDLParseException if there is a problem with the expression.
+     */
+    public int eval() throws HDLParseException {
         return eval(new HashMap<>());
     }
 
@@ -106,8 +125,10 @@ public class Expression {
      * Expression must take this form:
      * (subexpr1 OP subexpr2)
      * where subexpr1/2 can be a not expression, number, variable, or operator expression
+     *
+     * Throws HDLParseException if there is no operator or an invalid operator.
      */
-    private int evalOperator(HashMap<String, Integer> values) {
+    private int evalOperator(HashMap<String, Integer> values) throws HDLParseException {
         // Use iteration with a counter of open/closed parentheses to find out where the two sub expressions are
         // We know that the operator applying in this expression is the one that
         // first comes after we have seen one more open parenthesis than closed
@@ -138,7 +159,7 @@ public class Expression {
         }
 
         if (subexpr1str.equals("") || subexpr2str.equals("") || op.equals("")) {
-            return 0; // TODO: throw exception
+            throw new HDLParseException("Either no or an invalid operator was provided!");
         }
 
         Expression subexpr1 = new Expression(subexpr1str);
@@ -163,7 +184,7 @@ public class Expression {
 
 
             default:
-                return 0; // TODO: throw exception
+                throw new HDLParseException("Either no or an invalid operator was provided!");
         }
 
     }
@@ -204,8 +225,10 @@ public class Expression {
 
     /**
      * Returns a set of all signal names in this expression.
+     *
+     * Throws HDLParseException if there is a problem with the expression.
      */
-    public HashSet<String> getSignalNames() {
+    public HashSet<String> getSignalNames() throws HDLParseException {
         char firstChar = expression.charAt(0);
 
         // Not case
@@ -234,8 +257,10 @@ public class Expression {
     /**
      * Returns a set of all signal names in this expression in the case of
      * an operator expression.
+     *
+     * Throws HDLParseException if there is a problem with the expression.
      */
-    private HashSet<String> getSignalNamesOperator() {
+    private HashSet<String> getSignalNamesOperator() throws HDLParseException {
         // Use iteration with a counter of open/closed parentheses to find out where the two sub expressions are
         // We know that the operator applying in this expression is the one that
         // first comes after we have seen one more open parenthesis than closed
@@ -263,7 +288,7 @@ public class Expression {
         }
 
         if (subexpr1str.equals("") || subexpr2str.equals("")) {
-            return new HashSet<>(); // TODO: throw exception
+            throw new HDLParseException("Either no or an invalid operator was provided!");
         }
 
         Expression subexpr1 = new Expression(subexpr1str);

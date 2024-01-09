@@ -81,11 +81,11 @@ public class HDLFileReader {
                     words = line.split(" ");
 
                     if (signals.getRegs().contains(firstWord)) {
-                        if (!words[2].equals("<=")) {
+                        if (!words[1].equals("<=")) {
                             throw new HDLParseException("Must use <= when assigning to regs!");
                         }
                     } else if (signals.getWires().contains(firstWord)) {
-                        if (!words[2].equals("=")) {
+                        if (!words[1].equals("=")) {
                             throw new HDLParseException("Must use = when assigning to regs!");
                         }
                     }
@@ -93,7 +93,7 @@ public class HDLFileReader {
                     rest = line.substring(line.indexOf("=")+1).trim();
                     removeSemicolon = rest.substring(0, rest.indexOf(";")).trim();
                     addParentheses = checkForAndAddParentheses(removeSemicolon);
-                    signals.addTerminate(addParentheses);
+                    signals.addExpression(firstWord, addParentheses);
             }
         }
 

@@ -1,3 +1,4 @@
+import Exceptions.HDLParseException;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -163,6 +164,20 @@ class ExpressionTest {
         assertEquals(2, signals.size());
         assertTrue(signals.contains("ab3523"));
         assertTrue(signals.contains("x0q359"));
+    }
+
+    @Test // exception test
+    public void noOperatorTest() {
+        try {
+            Expression exp = new Expression("((1 + 2) (3 + 4))");
+            exp.eval();
+
+            fail("Expected exception but none was thrown!");
+        } catch (HDLParseException e) {
+            assertEquals("Either no or an invalid operator was provided!", e.getMessage());
+        } catch (Exception e) {
+            fail("Wrong exception was thrown!");
+        }
     }
 
 }

@@ -45,6 +45,7 @@ public class HDLFileReader {
             String firstWord = line.split(" ")[0];
             String rest;
             String removeSemicolon;
+            String addParentheses;
             String[] words;
             switch (firstWord) {
                 case "reg":
@@ -72,7 +73,8 @@ public class HDLFileReader {
                 case "TERMINATE":
                     rest = line.substring(line.indexOf("TERMINATE") + 9).trim();
                     removeSemicolon = rest.substring(0, rest.indexOf(";")).trim();
-                    signals.addTerminate(removeSemicolon);
+                    addParentheses = checkForAndAddParentheses(removeSemicolon);
+                    signals.addTerminate(addParentheses);
                     break;
 
                 default:
@@ -90,7 +92,8 @@ public class HDLFileReader {
 
                     rest = line.substring(line.indexOf("=")+1).trim();
                     removeSemicolon = rest.substring(0, rest.indexOf(";")).trim();
-                    signals.addExpression(firstWord, removeSemicolon);
+                    addParentheses = checkForAndAddParentheses(removeSemicolon);
+                    signals.addTerminate(addParentheses);
             }
         }
 
@@ -98,6 +101,34 @@ public class HDLFileReader {
         signals.build();
 
         return signals;
+    }
+
+    /**
+     * Takes in EXP, an expression string, and adds outer parentheses to it
+     * iff it is missing them.
+     */
+    private String checkForAndAddParentheses(String exp) {
+        for (int i = 0; i < exp.length() - 1; i++) {
+            if (Expression.VALID_OPERATORS.contains(exp.substring(i,i+1))) {
+                return exp;
+            } else if (Expression.VALID_OPERATORS.contains(exp.substring(i,i+2))) {
+                return exp;
+            }
+        }
+
+        int openMinusClose = 0;
+        for (int i = 0; i < exp.length(); i++) {
+            char c = exp.charAt(i);
+            if (c == '(') openMinusClose += 1;
+            else if (c == ')') openMinusClose -= 1;
+
+            // If there are no enclosing parentheses and we are not at the start/end of the string
+            if (openMinusClose == 0 && i != 0 && i != exp.length()-1) {
+                return "(" + exp + ")";
+            }
+        }
+
+        return exp;
     }
 
 }

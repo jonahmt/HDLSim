@@ -28,7 +28,7 @@ import java.util.List;;
 
 public class Expression {
 
-    public final List<String> VALID_OPERATORS = Arrays.asList(
+    public static final List<String> VALID_OPERATORS = Arrays.asList(
             "+", "-", "&", "|", "^", "==", "!="
     );
 

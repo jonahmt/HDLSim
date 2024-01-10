@@ -1,0 +1,20 @@
+---- Short Term -------------
+
+1. Test HDLFileReader
+2. Add Multiline statements to HDLFileReader
+3. Add Stepping to Signals
+4. Integration Tests
+
+
+---- Long Term Plans --------
+
+1. Signal history dump to txt file
+2. Modules
+3. Waveform viewer
+
+
+---- Future ------------------
+
+* More complex expressions (if, case, etc)
+* Arrays
+* Variable length signals (not just 32 bit)

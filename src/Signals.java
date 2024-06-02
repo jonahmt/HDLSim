@@ -39,6 +39,9 @@ public class Signals {
      */
     private boolean built;
 
+    /**
+     * The topological order. Will be null until build() is called.
+     */
     private ArrayList<String> wireOrder;
 
     /**
@@ -200,6 +203,10 @@ public class Signals {
         this.built = true;
     }
 
+    /**
+     * Makes sure there are no "hanging signals" which have no driving expression.
+     * If one is found, throws an exception.
+     */
     private void checkForExpressions() throws HDLParseException {
         if (!noExpressionYet.isEmpty()) {
             String msg = "The following signals have no driving expression: " + noExpressionYet;
@@ -207,6 +214,9 @@ public class Signals {
         }
     }
 
+    /**
+     * Executes a single clock cycle of the HDL.
+     */
     public void step() {
         assert built : "Must call build() before stepping!";
 
@@ -222,6 +232,11 @@ public class Signals {
         values = nextValues;
     }
 
+    /**
+     * Executes as many clock cycles as necessary until the TERMINATE signal
+     * takes on a value other than 0.
+     * Returns the final value of the TERMINATE signal.
+     */
     public int stepToTerminate() {
         while (values.get("TERMINATE") == 0) {
             step();

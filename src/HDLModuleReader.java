@@ -92,6 +92,10 @@ public class HDLModuleReader {
 
     }
 
+    /**
+     * Reads the provided line to parse the module declaration.
+     * Will consume more lines until the module declaration is fully read.
+     */
     private void readLineModule(String line) {
         String[] tokens = line.split(" ");
         isMain = tokens[1].equals("main");
@@ -123,7 +127,11 @@ public class HDLModuleReader {
         }
     }
 
+    /**
+     * Reads the provided line to initialize a reg.
+     */
     private void readLineReg(String line) {
+        // TODO: Support multiline statements
         String[] tokens = line.split(" ");
         int idx = tokens[3].indexOf(";");
         String valStr = idx >= 0 ? tokens[3].substring(0, idx) : tokens[3];
@@ -139,12 +147,24 @@ public class HDLModuleReader {
         signals.addReg(prefix + tokens[1], val);
     }
 
+    /**
+     * Reads the provided line to initialize a wire
+     */
     private void readLineWire(String line) {
+        // TODO: Support multiline statements
         String rest = line.substring(line.indexOf("wire") + 4).trim();
         String name = rest.substring(0, rest.indexOf(";")).trim();
         signals.addWire(prefix + name);
     }
 
+    /**
+     * Reads the provided line to instantiate a declared submodule.
+     * Will then switch execution over to a new HDLModuleReader which will
+     * fully read that submodule.
+     * Finally, creates bridge connections to set up the inputs and outputs
+     * of the new submodule.
+     * Will consume more lines until the submodule instantiation is fully parsed.
+     */
     private void readLineSubmod(String line) {
         String[] tokens = line.split(" ");
         String type = tokens[1];
@@ -188,6 +208,9 @@ public class HDLModuleReader {
         }
     }
 
+    /**
+     * Reads a line to parse the TERMINATE statement of the HDL.
+     */
     private void readLineTerminate(String line) {
         assert isMain : "TERMINATE statement can only be in the main file";
         String rest = line.substring(line.indexOf("TERMINATE") + 9).trim();
@@ -197,7 +220,11 @@ public class HDLModuleReader {
         signals.addTerminate(addPrefixToVars);
     }
 
+    /**
+     * Reads the line to parse an assignment of a variable to an expression.
+     */
     private void readLineAssignment(String line) {
+        // TODO: Support multiline assignments
         String[] words = line.split(" ");
         String firstWord = prefix + words[0];
 

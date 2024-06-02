@@ -29,3 +29,6 @@ replay_pid*
 
 # JUNIT build
 out
+
+# Scratch work
+scratch

@@ -1,20 +1,18 @@
 ---- Short Term -------------
 
-1. Test HDLModuleReader
-2. Add Multiline statements to HDLModuleReader
-3. Add Stepping to Signals
-4. Integration Tests
+1. Parse from command line
+2. Output to file
+3. Integration Tests
+4. Add Multiline statements to HDLModuleReader
 
 
 ---- Long Term Plans --------
 
-1. Signal history dump to txt file
-2. Modules
+1. Arrays
+2. Variable length signals
 3. Waveform viewer
 
 
 ---- Future ------------------
 
 * More complex expressions (if, case, etc)
-* Arrays
-* Variable length signals (not just 32 bit)

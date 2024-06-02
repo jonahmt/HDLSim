@@ -1,3 +1,8 @@
+import Exceptions.HDLException;
+
+import java.io.File;
+import java.util.HashMap;
+
 /**
  * @author Jonah Tharakan
  *
@@ -6,10 +11,51 @@
 
 public class HDLSim {
 
+    private static HashMap<String, Boolean> flags;
+    private static String[] allFlags = {"d", "v", "help"};
+    private static String[] flagNames = {"debug", "verbose", "help"};
+
+    private static File sourceDir;
+
     public static void main(String[] args) {
+        parseCommand(args);
+    }
 
-        System.out.println("Hello World");
+    /**
+     * Valid arg formats:
+     * HDLSim <source dir> [flags]
+     */
+    private static void parseCommand(String[] args) {
+        // Get source dir
+        String sourceDirStr = args[1];
+        sourceDir = new File(sourceDirStr);
+        if (!sourceDir.exists() || !sourceDir.isDirectory()) {
+            throw new IllegalArgumentException("Invalid project directory specified");
+        }
 
+        // Get flags
+        for (String flagName : flagNames) {
+            flags.put(flagName, false);
+        }
+        for (String arg : args) {
+            if (arg.charAt(0) == '-') {
+                boolean foundFlag = false;
+                String rest = arg.substring(1);
+                for (int i = 0; i < allFlags.length; i++) {
+                    if (rest.equals(allFlags[i]) || rest.equals(flagNames[i])) {
+                        flags.put(flagNames[i], true);
+                        foundFlag = true;
+                        break;
+                    }
+                }
+                if (!foundFlag) { throw new IllegalArgumentException("Undefined flag specified"); }
+            }
+        }
+    }
+
+    public static boolean checkFlag(String flag) {
+        if (flags.containsKey(flag)) { return flags.get(flag); }
+        else { throw new IllegalArgumentException("Undefined flag specified"); }
     }
 
 }

@@ -190,6 +190,13 @@ public class Signals {
         }
 
         this.wireOrder = topologicalSort;
+
+        // Get first values of wires
+        for (String wire : wireOrder) {
+            int val = expressions.get(wire).eval(values);
+            values.put(wire, val);
+        }
+
         this.built = true;
     }
 
@@ -198,6 +205,28 @@ public class Signals {
             String msg = "The following signals have no driving expression: " + noExpressionYet;
             throw new HDLParseException(msg);
         }
+    }
+
+    public void step() {
+        assert built : "Must call build() before stepping!";
+
+        HashMap<String, Integer> nextValues = new HashMap<>();
+        for (String reg : regs) {
+            int nextVal = expressions.get(reg).eval(values);
+            nextValues.put(reg, nextVal);
+        }
+        for (String wire : wireOrder) {
+            int val = expressions.get(wire).eval(nextValues);
+            nextValues.put(wire, val);
+        }
+        values = nextValues;
+    }
+
+    public int stepToTerminate() {
+        while (values.get("TERMINATE") == 0) {
+            step();
+        }
+        return values.get("TERMINATE");
     }
 
     // GETTERS ////////////////////////////////////////////////////////////////

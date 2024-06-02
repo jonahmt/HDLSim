@@ -66,7 +66,7 @@ public class Expression {
         }
 
         // Variable lookup case
-        else if (Character.isLetter(expression.charAt(0))) {
+        else if (expression.charAt(0) == '/') {
             if (values.containsKey(expression)) {
                 return values.get(expression);
             } else {

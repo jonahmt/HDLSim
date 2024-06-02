@@ -29,6 +29,8 @@ public class FileReaderTest {
         System.out.println("done reading");
         signals.build();
         System.out.println("done building");
+        signals.stepToTerminate();
+        System.out.println(signals.getValues().toString());
     }
 
 }

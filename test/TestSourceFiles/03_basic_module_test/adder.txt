@@ -1,0 +1,13 @@
+module adder (
+    input in_1,
+    input in_2,
+    output out
+);
+
+wire x;
+wire y;
+
+x = in_1;
+y = in_2;
+
+out = (x + y);

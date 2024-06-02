@@ -200,7 +200,6 @@ public class Signals {
         }
     }
 
-
     // GETTERS ////////////////////////////////////////////////////////////////
 
     public HashMap<String, Integer> getValues() {

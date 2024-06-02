@@ -25,3 +25,7 @@ replay_pid*
 
 # IntelliJ Config File
 *.iml
+.idea
+
+# JUNIT build
+out

@@ -242,7 +242,7 @@ public class Expression {
         }
 
         // Variable lookup case
-        else if (Character.isLetter(expression.charAt(0))) {
+        else if (!"0123456789".contains(Character.toString(expression.charAt(0)))) {
             HashSet<String> signal = new HashSet<>();
             signal.add(expression);
             return signal;

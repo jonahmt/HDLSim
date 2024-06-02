@@ -1,7 +1,7 @@
 ---- Short Term -------------
 
-1. Test HDLFileReader
-2. Add Multiline statements to HDLFileReader
+1. Test HDLModuleReader
+2. Add Multiline statements to HDLModuleReader
 3. Add Stepping to Signals
 4. Integration Tests
 

@@ -1,4 +1,3 @@
-import Exceptions.HDLException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,12 +12,17 @@ import java.util.HashMap;
 
 public class HDLSim {
 
+    // Stores whether a flag is active or not in this execution
     private static HashMap<String, Boolean> flags;
+    // List of valid flag abbreviations
     private static final String[] allFlags = {"v", "help", "x", "nl", "t"};
+    // List of flag full names. Indices line up with allFlags.
     private static final String[] flagNames = {"verbose", "help", "hex", "no-log", "time"};
 
+    // HDL source code directory for this execution
     private static File sourceDir;
 
+    // Start time of execution
     private static long startTime;
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -47,8 +51,7 @@ public class HDLSim {
     }
 
     /**
-     * Valid arg formats:
-     * HDLSim <source dir> [flags]
+     * Reads the source directory and flags, setting the appropriate static variables
      */
     private static void parseCommand(String[] args) {
         // Get source dir
@@ -85,11 +88,19 @@ public class HDLSim {
         }
     }
 
+    /**
+     * Returns the truth value of the flag.
+     *
+     * @throws IllegalArgumentException if an invalid flag is provided.
+     */
     public static boolean checkFlag(String flag) {
         if (flags.containsKey(flag)) { return flags.get(flag); }
         else { throw new IllegalArgumentException("Undefined flag specified"); }
     }
 
+    /**
+     * Prints message for -help command
+     */
     private static void printHelpMessage() {
         String msg =
         """

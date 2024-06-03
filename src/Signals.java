@@ -55,7 +55,9 @@ public class Signals {
      */
     private ArrayList<String> lexicographicalOrder;
 
+    // Output directory where .../result.txt and .../log.txt will be added
     private File outputDir;
+    // Fast file writer, used to write to .../log.txt
     private BufferedWriter logWriter;
 
     /**
@@ -77,6 +79,11 @@ public class Signals {
         this.outputDir = null;
     }
 
+    /**
+     * Sets the output directory to the specified path.
+     * Creates a directory at that location if one does not already exist.
+     * Exits program with status code 1 if a problem occurs.
+     */
     public void setOutputDir(String outputDirPath) {
         try {
             outputDir = new File(outputDirPath);
@@ -94,7 +101,6 @@ public class Signals {
         }
     }
 
-    // METHODS TO BE CALLED BY HDL_FILE_READER //////////////////////////////////
 
     /**
      * Adds a new reg to the Signals object, and sets its starting value.
@@ -247,7 +253,11 @@ public class Signals {
         this.built = true;
     }
 
+    /**
+     * Generates an alphabetical ordering of the signals.
+     */
     private void buildLexicographicOrder() {
+        assert this.built;
         lexicographicalOrder = new ArrayList<>(values.keySet());
         lexicographicalOrder.sort(String::compareTo);
         lexicographicalOrder.remove("TERMINATE");
@@ -267,7 +277,7 @@ public class Signals {
     }
 
     /**
-     * Executes a single clock cycle of the HDL.
+     * Executes a single clock cycle of the HDL. Adds the signal values to the log.
      */
     public void step() {
         assert built : "Must call build() before stepping!";
@@ -307,6 +317,9 @@ public class Signals {
         return values.get("TERMINATE");
     }
 
+    /**
+     * Writes the current values of all signals to the log in alphabetical order.
+     */
     private void dumpCurrentValues(BufferedWriter bw) throws IOException {
         for (String signal : lexicographicalOrder) {
             bw.write(signal + " ");
@@ -320,6 +333,9 @@ public class Signals {
         bw.write('\n');
     }
 
+    /**
+     * Writes the final values of all signals to the log in alphabetical order.
+     */
     public void dumpFinalOutput() {
         File out = new File(outputDir.getPath() + "/result.txt");
         try {
@@ -338,6 +354,9 @@ public class Signals {
         }
     }
 
+    /**
+     * Closes the log writer and flushes it's output.
+     */
     public void cleanUp() {
         try {
             this.logWriter.close();

@@ -1,9 +1,7 @@
 ---- Short Term -------------
 
-1. Clean up code
-2. Integration Tests
-3. Add Multiline statements to HDLModuleReader
-4. Add caching to file reader
+1. Integration Tests
+2. Add caching to file reader
 
 
 ---- Long Term Plans --------

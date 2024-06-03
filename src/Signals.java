@@ -95,9 +95,7 @@ public class Signals {
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("\nFatal IO exception occurred - Exiting program");
-            System.exit(1);
+            fatalIOException(e);
         }
     }
 
@@ -245,9 +243,7 @@ public class Signals {
             dumpCurrentValues(this.logWriter);
         }
         catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("\nFatal IO exception occurred - Exiting program");
-            System.exit(1);
+            fatalIOException(e);
         }
 
         this.built = true;
@@ -257,7 +253,6 @@ public class Signals {
      * Generates an alphabetical ordering of the signals.
      */
     private void buildLexicographicOrder() {
-        assert this.built;
         lexicographicalOrder = new ArrayList<>(values.keySet());
         lexicographicalOrder.sort(String::compareTo);
         lexicographicalOrder.remove("TERMINATE");
@@ -280,7 +275,7 @@ public class Signals {
      * Executes a single clock cycle of the HDL. Adds the signal values to the log.
      */
     public void step() {
-        assert built : "Must call build() before stepping!";
+        assert this.built : "Must call build() before stepping!";
 
         HashMap<String, Integer> nextValues = new HashMap<>();
         for (String reg : regs) {
@@ -298,9 +293,7 @@ public class Signals {
                 dumpCurrentValues(this.logWriter);
             }
             catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("\nFatal IO exception occurred - Exiting program");
-                System.exit(1);
+                fatalIOException(e);
             }
         }
     }
@@ -348,9 +341,7 @@ public class Signals {
             fw.close();
         }
         catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("\nFatal IO exception occurred - Exiting program");
-            System.exit(1);
+            fatalIOException(e);
         }
     }
 
@@ -362,10 +353,17 @@ public class Signals {
             this.logWriter.close();
         }
         catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("\nFatal IO exception occurred - Exiting program");
-            System.exit(1);
+            fatalIOException(e);
         }
+    }
+
+    /**
+     * Prints the trace of the exception and terminates the program.
+     */
+    private void fatalIOException(IOException e) {
+        e.printStackTrace();
+        System.out.println("\nFatal IO exception occurred - Exiting program");
+        System.exit(1);
     }
 
     // GETTERS ////////////////////////////////////////////////////////////////

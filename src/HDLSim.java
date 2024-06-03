@@ -28,12 +28,23 @@ public class HDLSim {
     public static void main(String[] args) throws FileNotFoundException {
         parseCommand(args);
 
+        runSimulation();
+
+        System.out.println("Finished Execution Successfully");
+        System.exit(0);
+    }
+
+    /**
+     * Method that does all the heavy lifting and actually runs the simulation,
+     * including reading from source files and writing to output files.
+     */
+    private static void runSimulation() throws FileNotFoundException {
         if (HDLSim.checkFlag("time")) {
             startTime = Instant.now().toEpochMilli();
         }
 
         Signals signals = new Signals();
-        signals.setOutputDir("test/TestSourceFiles/03_basic_module_test/out");
+        signals.setOutputDir(sourceDir.getPath() + "/out");
         HDLModuleReader mainReader = new HDLModuleReader(
                 signals, sourceDir.getPath(), "main.txt", "/");
         mainReader.readModule();
@@ -46,8 +57,6 @@ public class HDLSim {
             double millis = (Instant.now().toEpochMilli() - startTime) / 1000.0d;
             System.out.println("Execution time: " + millis + "s");
         }
-
-        System.out.println("Finished Execution Successfully");
     }
 
     /**

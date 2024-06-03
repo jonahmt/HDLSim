@@ -15,16 +15,23 @@ import java.util.Scanner;
 
 public class HDLModuleReader {
 
+    // The directory that the source file is contained in
     private String dir;
 
+    // File of the source code
     private File file;
     private Scanner sc;
+    // Prefix that will be used to name this signal. / for main, parent/instance_name else.
     private String prefix;
+    // Signals object to write wires and regs to
     private Signals signals;
 
+    // Set of input signals
     private HashSet<String> inputs;
+    // Set of output signals
     private HashSet<String> outputs;
 
+    // True if this file is main.txt, false otherwise
     private boolean isMain;
 
     /**
@@ -57,6 +64,7 @@ public class HDLModuleReader {
      * Throws HDLException if any problem occurs while reading the HDLFile.
      */
     public void readModule() throws HDLException {
+        boolean moduleDefinedYet = false;
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             // Check for and skip empty lines
@@ -66,26 +74,22 @@ public class HDLModuleReader {
                 if (line.substring(0, line.indexOf("//")).trim().length() == 0) { continue; }
             }
 
+            // Make sure only one module per file is present, and it is first
             String firstWord = line.split(" ")[0];
+            if ((!moduleDefinedYet && !firstWord.equals("module")) ||
+                    (moduleDefinedYet && firstWord.equals("module"))) {
+                throw new HDLParseException("Each file must contain exactly one module definition as the block in the file");
+            }
             switch (firstWord) {
-                case "module":
+                case "module" -> {
                     readLineModule(line);
-                    break;
-                case "reg":
-                    readLineReg(line);
-                    break;
-                case "wire":
-                    readLineWire(line);
-                    break;
-                case "submod":
-                    readLineSubmod(line);
-                    break;
-                case "TERMINATE":
-                    readLineTerminate(line);
-                    break;
-                default:
-                    readLineAssignment(line);
-                    break;
+                    moduleDefinedYet = true;
+                }
+                case "reg" -> readLineReg(line);
+                case "wire" -> readLineWire(line);
+                case "submod" -> readLineSubmod(line);
+                case "TERMINATE" -> readLineTerminate(line);
+                default -> readLineAssignment(line);
             }
 
         }
@@ -105,7 +109,7 @@ public class HDLModuleReader {
             if (!sc.hasNextLine()) {
                 throw new HDLParseException("Module declaration must end with a semicolon");
             }
-            fullExpression.append(sc.nextLine());
+            fullExpression.append(sc.nextLine() + " ");
         }
         String cxnsStr = fullExpression.substring(fullExpression.indexOf("(") + 1, fullExpression.indexOf(")"));
         if (cxnsStr.trim().length() == 0) { return; }
@@ -131,8 +135,15 @@ public class HDLModuleReader {
      * Reads the provided line to initialize a reg.
      */
     private void readLineReg(String line) {
-        // TODO: Support multiline statements
-        String[] tokens = line.split(" ");
+        StringBuilder fullExpression = new StringBuilder(line);
+        while (fullExpression.indexOf(";") < 0) {
+            if (!sc.hasNextLine()) {
+                throw new HDLParseException("Register declaration must end with a semicolon");
+            }
+            fullExpression.append(sc.nextLine() + " ");
+        }
+
+        String[] tokens = fullExpression.toString().split(" ");
         int idx = tokens[3].indexOf(";");
         String valStr = idx >= 0 ? tokens[3].substring(0, idx) : tokens[3];
         Integer val = null;
@@ -151,8 +162,15 @@ public class HDLModuleReader {
      * Reads the provided line to initialize a wire
      */
     private void readLineWire(String line) {
-        // TODO: Support multiline statements
-        String rest = line.substring(line.indexOf("wire") + 4).trim();
+        StringBuilder fullExpression = new StringBuilder(line);
+        while (fullExpression.indexOf(";") < 0) {
+            if (!sc.hasNextLine()) {
+                throw new HDLParseException("Wire declaration must end with a semicolon");
+            }
+            fullExpression.append(sc.nextLine() + " ");
+        }
+
+        String rest = fullExpression.substring(line.indexOf("wire") + 4).trim();
         String name = rest.substring(0, rest.indexOf(";")).trim();
         signals.addWire(prefix + name);
     }
@@ -183,7 +201,7 @@ public class HDLModuleReader {
             if (!sc.hasNextLine()) {
                 throw new HDLParseException("Submodule instantiation must end with a semicolon");
             }
-            fullExpression.append(sc.nextLine());
+            fullExpression.append(sc.nextLine() + " ");
         }
         int startIdx = fullExpression.indexOf("(");
         int endIdx;
@@ -213,7 +231,16 @@ public class HDLModuleReader {
      */
     private void readLineTerminate(String line) {
         assert isMain : "TERMINATE statement can only be in the main file";
-        String rest = line.substring(line.indexOf("TERMINATE") + 9).trim();
+
+        StringBuilder fullExpression = new StringBuilder(line);
+        while (fullExpression.indexOf(";") < 0) {
+            if (!sc.hasNextLine()) {
+                throw new HDLParseException("Terminate declaration must end with a semicolon");
+            }
+            fullExpression.append(sc.nextLine() + " ");
+        }
+
+        String rest = fullExpression.substring(line.indexOf("TERMINATE") + 9).trim();
         String removeSemicolon = rest.substring(0, rest.indexOf(";")).trim();
         String addParentheses = checkForAndAddParentheses(removeSemicolon);
         String addPrefixToVars = addParentheses.replaceAll("([a-zA-Z_][a-zA-Z0-9_]*)", prefix + "$1");
@@ -224,8 +251,15 @@ public class HDLModuleReader {
      * Reads the line to parse an assignment of a variable to an expression.
      */
     private void readLineAssignment(String line) {
-        // TODO: Support multiline assignments
-        String[] words = line.split(" ");
+        StringBuilder fullExpression = new StringBuilder(line);
+        while (fullExpression.indexOf(";") < 0) {
+            if (!sc.hasNextLine()) {
+                throw new HDLParseException("Assignment expression must end with a semicolon");
+            }
+            fullExpression.append(sc.nextLine() + " ");
+        }
+
+        String[] words = fullExpression.toString().split(" ");
         String firstWord = prefix + words[0];
 
         if (signals.getRegs().contains(firstWord)) {

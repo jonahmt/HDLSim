@@ -15,22 +15,4 @@ public class FileReaderTest {
         System.out.println(processed);
     }
 
-    @Test
-    public void doWhatIWant() {
-        Signals signals = new Signals();
-        try {
-            HDLModuleReader reader = new HDLModuleReader(signals, "test/TestSourceFiles/03_basic_module_test", "main.txt", "/");
-            reader.readModule();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-        System.out.println("done reading");
-        signals.build();
-        System.out.println("done building");
-        signals.stepToTerminate();
-        System.out.println(signals.getValues().toString());
-    }
-
 }

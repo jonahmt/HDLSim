@@ -1,9 +1,9 @@
 ---- Short Term -------------
 
-1. Parse from command line
-2. Output to file
-3. Integration Tests
-4. Add Multiline statements to HDLModuleReader
+1. Integration Tests
+2. Clean up code
+3. Add Multiline statements to HDLModuleReader
+4. Add caching to file reader
 
 
 ---- Long Term Plans --------

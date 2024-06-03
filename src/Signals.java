@@ -2,6 +2,10 @@ import Exceptions.HDLDuplicateSignalException;
 import Exceptions.HDLException;
 import Exceptions.HDLParseException;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -39,10 +43,20 @@ public class Signals {
      */
     private boolean built;
 
+
     /**
      * The topological order. Will be null until build() is called.
+     * Only includes wires. Used for updating signals.
      */
     private ArrayList<String> wireOrder;
+    /**
+     * The alphabetical order. Will be null until build() is called.
+     * Includes wires and regs. Used for writing output.
+     */
+    private ArrayList<String> lexicographicalOrder;
+
+    private File outputDir;
+    private BufferedWriter logWriter;
 
     /**
      * Creates a new Signals object, initializing all relevant internal data structures
@@ -50,14 +64,35 @@ public class Signals {
     public Signals() {
         this.values = new HashMap<>();
         this.expressions = new HashMap<>();
+
         this.regs = new HashSet<>();
         this.wires = new HashSet<>();
+
         this.noExpressionYet = new HashSet<>();
         this.dependencies = new HashMap<>();
+
         this.wireOrder = null;
+        this.lexicographicalOrder = null;
+
+        this.outputDir = null;
     }
 
+    public void setOutputDir(String outputDirPath) {
+        try {
+            outputDir = new File(outputDirPath);
+            outputDir.mkdirs();
 
+            if (!HDLSim.checkFlag("no-log")) {
+                FileWriter fw = new FileWriter(outputDir.getPath() + "/log.txt");
+                this.logWriter = new BufferedWriter(fw);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("\nFatal IO exception occurred - Exiting program");
+            System.exit(1);
+        }
+    }
 
     // METHODS TO BE CALLED BY HDL_FILE_READER //////////////////////////////////
 
@@ -151,10 +186,10 @@ public class Signals {
      * Throws HDLException if a cycle is found in the wire dependency graph.
      */
     public void build() throws HDLException {
-        // Use DFS Topological Sort Algorithm
-
         checkForExpressions();
+        buildLexicographicOrder();
 
+        // Use DFS Topological Sort Algorithm
         ArrayList<String> topologicalSort = new ArrayList<>();
 
         HashMap<String, Integer> inDegree = new HashMap<>();
@@ -200,8 +235,25 @@ public class Signals {
             values.put(wire, val);
         }
 
+        try {
+            dumpCurrentValues(this.logWriter);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("\nFatal IO exception occurred - Exiting program");
+            System.exit(1);
+        }
+
         this.built = true;
     }
+
+    private void buildLexicographicOrder() {
+        lexicographicalOrder = new ArrayList<>(values.keySet());
+        lexicographicalOrder.sort(String::compareTo);
+        lexicographicalOrder.remove("TERMINATE");
+        lexicographicalOrder.add(0, "TERMINATE");
+    }
+
 
     /**
      * Makes sure there are no "hanging signals" which have no driving expression.
@@ -230,6 +282,17 @@ public class Signals {
             nextValues.put(wire, val);
         }
         values = nextValues;
+
+        if (!HDLSim.checkFlag("no-log")) {
+            try {
+                dumpCurrentValues(this.logWriter);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("\nFatal IO exception occurred - Exiting program");
+                System.exit(1);
+            }
+        }
     }
 
     /**
@@ -242,6 +305,48 @@ public class Signals {
             step();
         }
         return values.get("TERMINATE");
+    }
+
+    private void dumpCurrentValues(BufferedWriter bw) throws IOException {
+        for (String signal : lexicographicalOrder) {
+            bw.write(signal + " ");
+            if (HDLSim.checkFlag("hex")) {
+                bw.write("0x" + Integer.toHexString(values.get(signal)).toUpperCase());
+            } else {
+                bw.write(Integer.toString(values.get(signal)));
+            }
+            bw.write('\n');
+        }
+        bw.write('\n');
+    }
+
+    public void dumpFinalOutput() {
+        File out = new File(outputDir.getPath() + "/result.txt");
+        try {
+            FileWriter fw = new FileWriter(out);
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            dumpCurrentValues(bw);
+
+            bw.close();
+            fw.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("\nFatal IO exception occurred - Exiting program");
+            System.exit(1);
+        }
+    }
+
+    public void cleanUp() {
+        try {
+            this.logWriter.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("\nFatal IO exception occurred - Exiting program");
+            System.exit(1);
+        }
     }
 
     // GETTERS ////////////////////////////////////////////////////////////////

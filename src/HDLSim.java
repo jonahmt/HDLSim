@@ -2,6 +2,7 @@ import Exceptions.HDLException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.Instant;
 import java.util.HashMap;
 
 /**
@@ -13,19 +14,36 @@ import java.util.HashMap;
 public class HDLSim {
 
     private static HashMap<String, Boolean> flags;
-    private static String[] allFlags = {"d", "v", "help"};
-    private static String[] flagNames = {"debug", "verbose", "help"};
+    private static final String[] allFlags = {"v", "help", "x", "nl", "t"};
+    private static final String[] flagNames = {"verbose", "help", "hex", "no-log", "time"};
 
     private static File sourceDir;
 
+    private static long startTime;
+
     public static void main(String[] args) throws FileNotFoundException {
         parseCommand(args);
+
+        if (HDLSim.checkFlag("time")) {
+            startTime = Instant.now().toEpochMilli();
+        }
+
         Signals signals = new Signals();
+        signals.setOutputDir("test/TestSourceFiles/03_basic_module_test/out");
         HDLModuleReader mainReader = new HDLModuleReader(
                 signals, sourceDir.getPath(), "main.txt", "/");
         mainReader.readModule();
         signals.build();
         signals.stepToTerminate();
+        signals.dumpFinalOutput();
+        signals.cleanUp();
+
+        if (HDLSim.checkFlag("time")) {
+            double millis = (Instant.now().toEpochMilli() - startTime) / 1000.0d;
+            System.out.println("Execution time: " + millis + "s");
+        }
+
+        System.out.println("Finished Execution Successfully");
     }
 
     /**
@@ -60,11 +78,37 @@ public class HDLSim {
                 if (!foundFlag) { throw new IllegalArgumentException("Undefined flag specified"); }
             }
         }
+
+        if (checkFlag("help")) {
+            printHelpMessage();
+            System.exit(0);
+        }
     }
 
     public static boolean checkFlag(String flag) {
         if (flags.containsKey(flag)) { return flags.get(flag); }
         else { throw new IllegalArgumentException("Undefined flag specified"); }
+    }
+
+    private static void printHelpMessage() {
+        String msg =
+        """
+        --- HELP MESSAGE GUIDE ---
+        
+        Usage:
+            HDLSim <source directory> [flags]
+        
+        Available Flags:
+            FLAG    : WORD      : DESCRIPTION
+            ----------------------------------
+            -v      : verbose   : TBD.
+            -help   : help      : Prints this message.
+            -x      : hex       : Causes output file values to be displayed in hex rather than decimal.
+            -nl     : no-log    : Does not dump values to intermediate log. Final values will still be dumped. Should improve speed.
+            -t      : time      : Prints the run time of execution.
+        """;
+
+        System.out.println(msg);
     }
 
 }

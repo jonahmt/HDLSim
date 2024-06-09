@@ -1,3 +1,5 @@
+package UnitTests;
+
 import Exceptions.HDLException;
 import org.junit.jupiter.api.Test;
 

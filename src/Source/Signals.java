@@ -1,6 +1,9 @@
+package Source;
+
 import Exceptions.HDLDuplicateSignalException;
 import Exceptions.HDLException;
 import Exceptions.HDLParseException;
+import Source.HDLSim;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,7 +29,7 @@ public class Signals {
     // For convenience
     private HashSet<String> regs;
     private HashSet<String> wires;
-    // Stores signals that are declared. Signals get removed when a driving expression is added.
+    // Stores signals that are declared. HDLSim.Signals get removed when a driving expression is added.
     private HashSet<String> noExpressionYet;
 
     /**
@@ -61,7 +64,7 @@ public class Signals {
     private BufferedWriter logWriter;
 
     /**
-     * Creates a new Signals object, initializing all relevant internal data structures
+     * Creates a new HDLSim.Signals object, initializing all relevant internal data structures
      */
     public Signals() {
         this.values = new HashMap<>();
@@ -101,7 +104,7 @@ public class Signals {
 
 
     /**
-     * Adds a new reg to the Signals object, and sets its starting value.
+     * Adds a new reg to the HDLSim.Signals object, and sets its starting value.
      *
      * Throws HDLDuplicateSignalException if SIGNAL has already been declared.
      */
@@ -117,7 +120,7 @@ public class Signals {
     }
 
     /**
-     * Adds a new wire to the Signals object
+     * Adds a new wire to the HDLSim.Signals object
      *
      * Throws HDLDuplicateSignalException if SIGNAL has already been declared.
      */
@@ -171,7 +174,7 @@ public class Signals {
     }
 
     /**
-     * Adds a termination condition to the Signals object. The program execution
+     * Adds a termination condition to the HDLSim.Signals object. The program execution
      * will be stopped as soon as this expression evaluates to any value other than 0.
      *
      * Throws HDLDuplicateSignalException if a TERMINATE expression has already been declared.

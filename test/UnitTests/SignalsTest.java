@@ -1,7 +1,10 @@
+package UnitTests;
+
+import Source.Signals;
 import Exceptions.HDLDuplicateSignalException;
 import Exceptions.HDLException;
 import Exceptions.HDLParseException;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Jonah Tharakan
  *
- * Unit tests for Signals class
+ * Unit tests for HDLSim.Signals class
  */
 class SignalsTest {
 
     /**
-     * Creates a working Signals object
+     * Creates a working HDLSim.Signals object
      */
     private Signals makeSignals1() throws HDLException {
         Signals signals = new Signals();
@@ -28,7 +31,7 @@ class SignalsTest {
     }
 
     /**
-     * Creates a working Signals object with a more complex wire structure
+     * Creates a working HDLSim.Signals object with a more complex wire structure
      */
     private Signals makeSignals2() throws HDLException {
         Signals signals = new Signals();
@@ -55,25 +58,25 @@ class SignalsTest {
         try {
             Signals signals = makeSignals1();
 
-            assertEquals(1, signals.getRegs().size());
-            assertTrue(signals.getRegs().contains("A"));
-            assertEquals(1, signals.getWires().size());
-            assertTrue(signals.getWires().contains("TERMINATE"));
+            Assertions.assertEquals(1, signals.getRegs().size());
+            Assertions.assertTrue(signals.getRegs().contains("A"));
+            Assertions.assertEquals(1, signals.getWires().size());
+            Assertions.assertTrue(signals.getWires().contains("TERMINATE"));
 
-            assertEquals(2, signals.getExpressions().size());
-            assertEquals("(A + 1)", signals.getExpressions().get("A").toString());
-            assertEquals("(A == 10)", signals.getExpressions().get("TERMINATE").toString());
+            Assertions.assertEquals(2, signals.getExpressions().size());
+            Assertions.assertEquals("(A + 1)", signals.getExpressions().get("A").toString());
+            Assertions.assertEquals("(A == 10)", signals.getExpressions().get("TERMINATE").toString());
 
-            assertEquals(1, signals.getDependencies().size());
-            assertEquals(1, signals.getDependencies().get("TERMINATE").size());
-            assertTrue(signals.getDependencies().get("TERMINATE").contains("A"));
+            Assertions.assertEquals(1, signals.getDependencies().size());
+            Assertions.assertEquals(1, signals.getDependencies().get("TERMINATE").size());
+            Assertions.assertTrue(signals.getDependencies().get("TERMINATE").contains("A"));
 
-            assertEquals(2, signals.getValues().size());
-            assertEquals(1, signals.getValues().get("A"));
+            Assertions.assertEquals(2, signals.getValues().size());
+            Assertions.assertEquals(1, signals.getValues().get("A"));
 
-            assertEquals(0, signals.getNoExpressionYet().size());
+            Assertions.assertEquals(0, signals.getNoExpressionYet().size());
 
-            assertFalse(signals.isBuilt());
+            Assertions.assertFalse(signals.isBuilt());
         }
         catch (HDLException e) {
             e.printStackTrace();
@@ -85,9 +88,9 @@ class SignalsTest {
     public void simpleBuildTest() {
        try {
            Signals signals = makeSignals1();
-           assertFalse(signals.isBuilt());
+           Assertions.assertFalse(signals.isBuilt());
            signals.build();
-           assertTrue(signals.isBuilt());
+           Assertions.assertTrue(signals.isBuilt());
 
            ArrayList<String> ord = signals.getWireOrder();
            assertEquals(1, ord.size());

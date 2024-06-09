@@ -4,10 +4,4 @@ module adder (
     output out
 );
 
-wire x;
-wire y;
-
-x = in_1;
-y = in_2;
-
-out = (x + y);
+out = in_1 + in_2;

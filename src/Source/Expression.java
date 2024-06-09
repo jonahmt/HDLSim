@@ -1,4 +1,5 @@
-import Exceptions.HDLException;
+package Source;
+
 import Exceptions.HDLParseException;
 
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import java.util.List;;
  * Class that represents one expression between any number of signals and
  * contants.  Expressions use logical or arithmetical operators to combine
  * signals and constants to resolve a signal integer value, which will be
- * returned upon calling "eval(...)" on the Expression object.
+ * returned upon calling "eval(...)" on the HDLSim.Expression object.
  *
  * Internally the expressions are just stored as strings.
  *
@@ -122,7 +123,7 @@ public class Expression {
      * and then uses the operator to combine those outputs, returning that
      * final output.
      *
-     * Expression must take this form:
+     * HDLSim.Expression must take this form:
      * (subexpr1 OP subexpr2)
      * where subexpr1/2 can be a not expression, number, variable, or operator expression
      *

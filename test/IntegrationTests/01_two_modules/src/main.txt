@@ -1,4 +1,4 @@
-module main ();
+module main();
 
 reg A = 0;
 wire B;
@@ -8,9 +8,9 @@ B = 1;
 A <= C;
 
 submod adder my_adder (
-    .in_1(A),
-    .in_2(B),
+    .in_1(A)
+    .in_2(B)
     .out(C)
 );
 
-TERMINATE A == 10;
+TERMINATE A == 2;

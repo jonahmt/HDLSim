@@ -1,5 +1,0 @@
-reg A = 0;
-
-A <= A + 1;
-
-TERMINATE A == 10;

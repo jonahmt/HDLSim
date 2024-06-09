@@ -1,0 +1,9 @@
+module main();
+
+reg A = 0;
+wire B;
+
+B = 1;
+A <= A + B;
+
+TERMINATE A == 2;

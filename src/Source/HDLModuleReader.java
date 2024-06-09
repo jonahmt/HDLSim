@@ -1,3 +1,5 @@
+package Source;
+
 import Exceptions.HDLException;
 import Exceptions.HDLParseException;
 
@@ -10,7 +12,7 @@ import java.util.Scanner;
  * @author Jonah Tharakan
  *
  * Class that takes in the path to a valid HDL txt file and reads it to
- * construct a Signals object that encapsulates the logic in the file.
+ * construct a HDLSim.Signals object that encapsulates the logic in the file.
  */
 
 public class HDLModuleReader {
@@ -23,7 +25,7 @@ public class HDLModuleReader {
     private Scanner sc;
     // Prefix that will be used to name this signal. / for main, parent/instance_name else.
     private String prefix;
-    // Signals object to write wires and regs to
+    // HDLSim.Signals object to write wires and regs to
     private Signals signals;
 
     // Set of input signals
@@ -35,10 +37,10 @@ public class HDLModuleReader {
     private boolean isMain;
 
     /**
-     * Prepares a new HDLModuleReader object with the specified file path.
+     * Prepares a new HDLSim.HDLModuleReader object with the specified file path.
      * Prefix should be the name of the module that is instantiated.
-     * Signals is a reference to the Signals object of this project. Will be created
-     * by HDLSim (main method)
+     * HDLSim.Signals is a reference to the HDLSim.Signals object of this project. Will be created
+     * by HDLSim.HDLSim (main method)
      *
      * Throws FileNotFoundException if a nonexistent invalid file path is provided.
      */
@@ -55,10 +57,10 @@ public class HDLModuleReader {
     }
 
     /**
-     * Reads the provided file and parses the logic to add to the Signals object
+     * Reads the provided file and parses the logic to add to the HDLSim.Signals object
      * representing the logic.
      *
-     * Upon encountering a submodule, creates a new HDLModuleReader for that module and
+     * Upon encountering a submodule, creates a new HDLSim.HDLModuleReader for that module and
      * passes off execution. Creates bridge signals.
      *
      * Throws HDLException if any problem occurs while reading the HDLFile.
@@ -177,7 +179,7 @@ public class HDLModuleReader {
 
     /**
      * Reads the provided line to instantiate a declared submodule.
-     * Will then switch execution over to a new HDLModuleReader which will
+     * Will then switch execution over to a new HDLSim.HDLModuleReader which will
      * fully read that submodule.
      * Finally, creates bridge connections to set up the inputs and outputs
      * of the new submodule.

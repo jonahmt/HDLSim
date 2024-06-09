@@ -8,8 +8,8 @@ B = 1;
 A <= C;
 
 submod adder my_adder (
-    .in_1(A)
-    .in_2(B)
+    .in_1(A),
+    .in_2(B),
     .out(C)
 );
 

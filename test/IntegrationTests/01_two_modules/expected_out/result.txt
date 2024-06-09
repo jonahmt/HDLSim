@@ -1,7 +1,8 @@
 TERMINATE 1
 /A 2
 /B 1
-/C 2
+/C 3
 /my_adder/in_1 2
 /my_adder/in_2 1
-/my_adder/out 2
+/my_adder/out 3
+

@@ -1,4 +1,4 @@
-/TERMINATE 1
+TERMINATE 1
 /A 2
 /B 1
 

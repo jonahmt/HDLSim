@@ -40,9 +40,8 @@ def run_all_tests():
 
 def exec_test(dir):
     src_dir = dir + "/src/"
-    print(src_dir)
     cmd = ["java", "-cp", SRC_PATH + "/../bin/", "Source.HDLSim", src_dir]
-    subprocess.run(cmd)
+    subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
 
 def check_test(dir):
@@ -64,9 +63,9 @@ def check_test(dir):
     with open(real_out + "/result.txt") as real_result_file:
         with open(expected_out + "/result.txt") as expected_result_file:
             real_result = real_result_file.read()
-            expected_result_file = expected_result_file.read()
-            if real_log != expected_log:
-                print(bcolors.FAIL + "Log files differ!" + bcolors.ENDC)
+            expected_result = expected_result_file.read()
+            if real_result != expected_result:
+                print(bcolors.FAIL + "Result files differ!" + bcolors.ENDC)
                 return
 
     print(bcolors.OKGREEN + "Test Passed!" + bcolors.ENDC)
